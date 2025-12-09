@@ -1,0 +1,6 @@
+[
+{"id":1,"title":"Классический костюм Navy","subtitle":"Лёгкая шерсть, подгонка","price":72000,"image":"assets/images/suit1.jpg","description":"Классический костюм для мероприятий и повседневной носки."},
+{"id":2,"title":"Серый костюм Slim","subtitle":"Современная посадка","price":68000,"image":"assets/images/suit2.jpg","description":"Универсальный костюм для офиса и торжеств."},
+{"id":3,"title":"Костюм с текстурой","subtitle":"Тонкая структура ткани","price":83000,"image":"assets/images/suit3.jpg","description":"Выбор для тех, кто ценит фактуру."},
+{"id":4,"title":"Брендовая рубашка","subtitle":"Хлопок премиум","price":12000,"image":"assets/images/shirt1.jpg","description":"Идеально сочетается с костюмом."}
+]

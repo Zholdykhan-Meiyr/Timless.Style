@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Корзина — Timeless Style</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body{ font-family:'Georgia',serif; background:#f6f5f2; margin:0; color:#1a1a1a; }
+    header{ background:#000; color:#fff; text-align:center; padding:20px 15px; position:relative; }
+    header h1{ margin:0; font-size:24px; }
+    main{ max-width:900px; margin:30px auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+    table{ width:100%; border-collapse:collapse; margin-bottom:15px; }
+    td,th{ padding:12px; border-bottom:1px solid #eee; text-align:left; vertical-align:middle; }
+    .product-thumb{ width:80px; border-radius:8px; }
+    .qty-input{ width:60px; padding:6px; border-radius:6px; border:1px solid #ccc; text-align:center; }
+    .btn{ background:#111; color:#fff; padding:8px 12px; border-radius:6px; text-decoration:none; cursor:pointer; }
+    .btn:hover{ background:#c9a14a; color:#000; }
+    .summary{ text-align:right; margin-top:12px; }
+    .summary p{ font-size:18px; margin:6px 0; }
+    .promo{ display:flex; gap:8px; justify-content:flex-end; margin-bottom:12px; }
+    @media(max-width:700px){ table,thead,tbody,th,td,tr{display:block;} td{padding:8px;} .product-thumb{width:100%;} }
+  </style>
+</head>
+<body>
+  <header><h1>Timeless Style — Корзина</h1></header>
+
+  <main>
+    <div id="empty" style="display:none; text-align:center; padding:30px;">
+      <p>Ваша корзина пуста.</p>
+      <a href="index.html" class="btn">Вернуться в каталог</a>
+    </div>
+
+    <div id="content" style="display:none;">
+      <table id="cartTable">
+        <thead>
+          <tr><th>Товар</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="promo">
+        <input id="promoInput" placeholder="Промо-код" style="padding:8px; border-radius:6px; border:1px solid #ccc;">
+        <button id="applyPromo" class="btn">Применить</button>
+      </div>
+
+      <div class="summary">
+        <p id="subtotalText">Итого: 0 ₸</p>
+        <p id="discountText" style="color:#c90000; display:none;">Скидка: -0 ₸</p>
+        <p id="totalText" style="font-weight:bold;">К оплате: 0 ₸</p>
+        <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;">
+          <a id="clearCart" class="btn" style="background:#777">Очистить корзину</a>
+          <a id="toOrder" class="btn">Оформить заказ</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const CART_KEY = 'timeless_cart_v1';
+    function getCart(){ return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+    function saveCart(cart){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); render(); updateHeaderCounter(); }
+
+    function formatPrice(n){ return new Intl.NumberFormat('ru-RU').format(n) + ' ₸'; }
+
+    function render(){
+      const cart = getCart();
+      const content = document.getElementById('content');
+      const empty = document.getElementById('empty');
+      if(cart.length === 0){ content.style.display='none'; empty.style.display='block'; return; }
+      content.style.display='block'; empty.style.display='none';
+
+      const tbody = document.querySelector('#cartTable tbody');
+      tbody.innerHTML = '';
+      let subtotal = 0;
+      cart.forEach((item, idx)=>{
+        const sum = item.price * item.qty;
+        subtotal += sum;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <img src="${item.img}" class="product-thumb" alt="">
+              <div>
+                <div style="font-weight:bold">${item.name}</div>
+                <div style="font-size:13px; color:#666">Размер: ${item.size || '-'}</div>
+              </div>
+            </div>
+          </td>
+          <td>${formatPrice(item.price)}</td>
+          <td><input data-idx="${idx}" class="qty-input" type="number" min="1" value="${item.qty}"></td>
+          <td>${formatPrice(sum)}</td>
+          <td><button data-idx="${idx}" class="btn remove">Удалить</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const subtotalText = document.getElementById('subtotalText');
+      const totalText = document.getElementById('totalText');
+      subtotalText.textContent = 'Итого: ' + formatPrice(subtotal);
+
+      // delivery fee simple logic
+      const delivery = 2000; // фиксированная доставка
+      const total = subtotal + delivery;
+      totalText.textContent = `К оплате: ${formatPrice(total)} (включая доставку ${formatPrice(delivery)})`;
+      document.getElementById('discountText').style.display = 'none';
+    }
+
+    // events
+    document.addEventListener('change', (e)=>{
+      if(e.target.classList.contains('qty-input')){
+        const idx = Number(e.target.dataset.idx);
+        const val = Math.max(1, Number(e.target.value));
+        const cart = getCart();
+        cart[idx].qty = val;
+        saveCart(cart);
+      }
+    });
+
+    document.addEventListener('click', (e)=>{
+      if(e.target.classList.contains('remove')){
+        const idx = Number(e.target.dataset.idx);
+        const cart = getCart();
+        cart.splice(idx,1);
+        saveCart(cart);
+      }
+      if(e.target.id === 'clearCart'){
+        localStorage.removeItem(CART_KEY);
+        render();
+        updateHeaderCounter();
+      }
+      if(e.target.id === 'toOrder'){
+        // сохраняем текущую корзину (с актуальными данными) и переходим на order.html
+        window.location.href = 'order.html';
+      }
+      if(e.target.id === 'applyPromo'){
+        const code = document.getElementById('promoInput').value.trim().toLowerCase();
+        if(code === 'SALE10'){
+          // применяем скидку 10%
+          const cart = getCart();
+          const subtotal = cart.reduce((s,i)=> s + i.price * i.qty, 0);
+          const discount = Math.round(subtotal * 0.10);
+          const total = subtotal - discount + 2000;
+          document.getElementById('discountText').textContent = `Скидка: -${formatPrice(discount)}`;
+          document.getElementById('discountText').style.display = 'block';
+          document.getElementById('totalText').textContent = `К оплате: ${formatPrice(total)}`;
+          alert('Промо-код применён. Скидка 10%');
+        } else {
+          alert('Неверный промо-код');
+        }
+      }
+    });
+
+    // header counter update (if exists)
+    function updateHeaderCounter(){
+      try{
+        const counter = window.opener ? null : document.getElementById('cartCounter'); // not present on this page normally
+        // Instead update localStorage count for header in other pages; here we'll dispatch event
+        const cart = getCart();
+        const qty = cart.reduce((s,i)=> s + i.qty, 0);
+        localStorage.setItem('timeless_cart_count', qty);
+      }catch(e){}
+    }
+
+    render();
+  </script>
+</body>
+</html>

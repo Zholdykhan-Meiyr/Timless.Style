@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Оформление заказа — Timeless Style</title>
+
+<style>
+  :root{
+    --bg:#f8f5f1;
+    --brown:#4a3b2b;
+    --beige:#fff6ee;
+    --accent:#d2b48c;
+    --container:1100px;
+    --muted:#9ca3af;
+    --error:#dc2626;
+    --success:#10b981;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,serif;background:var(--bg);color:var(--brown);-webkit-font-smoothing:antialiased;padding:40px}
+  .container{max-width:900px;margin:0 auto;background:var(--beige);padding:28px;border-radius:14px;box-shadow:0 10px 30px rgba(74,59,43,0.08);}
+
+  h1{font-size:22px;margin-bottom:8px}
+  p.lead{color:var(--muted);margin-bottom:18px}
+
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+  .card{background:white;padding:18px;border-radius:12px;border:1px solid rgba(74,59,43,0.04)}
+  label{display:block;font-size:13px;color:var(--brown);margin-bottom:6px;font-weight:600}
+  .input, textarea, select{
+    width:100%;padding:12px;border-radius:10px;border:1px solid #e6e1dc;background:transparent;
+    font-size:15px;outline:none;transition:box-shadow .22s ease, border-color .22s ease, transform .12s ease;
+    box-shadow:0 1px 0 rgba(0,0,0,0.02) inset;
+  }
+  .input:focus, textarea:focus, select:focus{
+    transform:translateY(-2px);
+    border-color:var(--brown);
+    box-shadow:0 6px 20px rgba(74,59,43,0.08);
+  }
+
+  .input:focus + .hint, .has-value + .hint{opacity:1; transform:translateY(0)}
+  .hint{font-size:12px;color:var(--muted);opacity:0;transform:translateY(6px);transition:all .24s ease}
+
+  .is-error {border-color:var(--error)!important; box-shadow:0 6px 22px rgba(220,38,38,0.08)!important}
+  .error-text{color:var(--error);font-size:13px;margin-top:6px}
+
+  .row{display:flex;gap:12px;align-items:center}
+  .btn{
+    background:var(--brown);color:var(--beige);border:none;padding:12px 14px;border-radius:10px;
+    cursor:pointer;font-weight:600;transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(74,59,43,0.12)}
+  .btn.secondary{background:transparent;border:1px solid rgba(74,59,43,0.08);color:var(--brown)}
+
+  .summary{position:sticky;top:20px}
+  .summary h3{margin-bottom:10px}
+  .summary-list{max-height:320px;overflow:auto;padding-right:8px}
+  .summary-item{display:flex;justify-content:space-between;padding:10px;border-radius:8px;margin-bottom:10px;background:linear-gradient(180deg,#fff,#fbf9f6);border:1px solid rgba(74,59,43,0.03)}
+  .summary-total{display:flex;justify-content:space-between;font-weight:800;padding:12px;border-radius:10px;background:#fff6ee;border:1px solid rgba(74,59,43,0.04)}
+
+  .payment-options{display:flex;gap:10px;margin-top:10px}
+  .pay-card{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.05);text-align:center;cursor:pointer;transition:transform .12s, box-shadow .12s}
+  .pay-card.selected{border-color:var(--accent);box-shadow:0 8px 30px rgba(210,180,140,0.12);transform:translateY(-4px)}
+  .pay-name{font-weight:700;margin-bottom:6px}
+  .pay-sub{font-size:13px;color:var(--muted)}
+
+  .whatsapp-fixed{
+    position:fixed;right:18px;bottom:18px;background:#25D366;color:white;border-radius:999px;padding:14px 16px;
+    display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(37,211,102,0.16);cursor:pointer;font-weight:700;z-index:999;
+  }
+  .whatsapp-fixed img{width:20px;height:20px}
+
+  .toast-wrap{position:fixed;left:50%;transform:translateX(-50%);top:18px;z-index:2000}
+  .toast{background:#111;color:white;padding:10px 16px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.18);opacity:0;transform:translateY(-6px);transition:all .28s}
+  .toast.show{opacity:1;transform:translateY(0)}
+
+  .muted{color:var(--muted);font-size:13px;margin-top:6px}
+  .small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Оформление заказа — Timeless Style</h1>
+  <p class="lead">Проверьте содержимое заказа, заполните контактные данные. Мы пришлём уведомление о заказе.</p>
+
+  <div class="grid">
+    <!-- LEFT: form -->
+    <div class="card">
+      <form id="orderForm" autocomplete="off">
+        <input type="text" name="website" id="website" style="position:absolute;left:-9999px;top:auto;opacity:0" tabindex="-1" autocomplete="off">
+
+        <label for="clientName">Ваше имя</label>
+        <input id="clientName" class="input" name="clientName" placeholder="Иван Иванов" required>
+        <div class="hint">Как к вам обращаться</div>
+        <div id="err-name" class="error-text" style="display:none"></div>
+
+        <label for="clientEmail" style="margin-top:12px">Email</label>
+        <input id="clientEmail" type="email" class="input" name="clientEmail" placeholder="mail@example.com" required>
+        <div class="hint">Нужен для уведомления</div>
+        <div id="err-email" class="error-text" style="display:none"></div>
+
+        <label for="clientPhone" style="margin-top:12px">Телефон</label>
+        <input id="clientPhone" class="input" name="clientPhone" placeholder="+7 707 123 45 67" required>
+        <div class="hint">Формат: +7XXXXXXXXXX или международный</div>
+        <div id="err-phone" class="error-text" style="display:none"></div>
+
+        <div style="margin-top:14px" class="small">Оплата</div>
+        <div class="payment-options" role="tablist" aria-label="Оплата">
+          <div class="pay-card selected" data-pay="kaspi" id="payKaspi">
+            <div class="pay-name">Kaspi</div>
+            <div class="pay-sub">Оплата картой / Kaspi Pay (UI)</div>
+          </div>
+          <div class="pay-card" data-pay="card" id="payCard">
+            <div class="pay-name">Stripe</div>
+            <div class="pay-sub">Оплата картой (mock UI)</div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;display:flex;gap:10px">
+          <button type="button" id="btnPay" class="btn">Отправить заказ</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- RIGHT: summary -->
+    <aside class="summary">
+      <div class="card">
+        <h3>Ваш заказ</h3>
+        <div id="summaryList" class="summary-list" aria-live="polite"></div>
+        <div class="summary-total" style="margin-top:12px">
+          <div>Итого</div>
+          <div id="summaryTotal">0 ₸</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- WhatsApp fixed -->
+<div class="whatsapp-fixed" id="whatsappBtn" title="Написать в WhatsApp">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="wa"> Написать
+</div>
+
+<!-- Toast wrapper -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+(function(){
+  function $(id){ return document.getElementById(id); }
+  function showToast(msg, timeout=3000){ 
+    const wrap = $('toastWrap');
+    const el = document.createElement('div'); el.className='toast'; el.textContent = msg;
+    wrap.appendChild(el);
+    requestAnimationFrame(()=> el.classList.add('show'));
+    setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),300) }, timeout);
+  }
+
+  // Load cart from localStorage
+  let cart = JSON.parse(localStorage.getItem('timeless_cart') || '[]');
+
+  // Render summary
+  function renderSummary(){
+    const list = $('summaryList'); list.innerHTML='';
+    let total=0;
+    if (cart.length===0){
+      list.innerHTML = '<div class="small muted">Корзина пуста</div>';
+    } else {
+      cart.forEach(item=>{
+        const div = document.createElement('div'); div.className='summary-item';
+        div.innerHTML = `<div>${item.name} x ${item.quantity || 1}</div><div>${(item.price||0).toLocaleString()} ₸</div>`;
+        list.appendChild(div);
+        total += (item.price||0) * (item.quantity || 1);
+      });
+    }
+    $('summaryTotal').textContent = total.toLocaleString() + ' ₸';
+  }
+  renderSummary();
+
+  // UI: payment selection
+  document.querySelectorAll('.pay-card').forEach(card=>{
+    card.addEventListener('click', ()=> {
+      document.querySelectorAll('.pay-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+    });
+  });
+
+  // WhatsApp button
+  $('whatsappBtn').addEventListener('click', ()=>{
+    const phone = '+77000000000';
+    const total = $('summaryTotal').textContent;
+    let text = `Здравствуйте! Интересуюсь заказом с сайта Timeless Style.%0AСостав:%0A`;
+    cart.forEach(i=> text += `• ${i.name} x ${i.quantity||1}%0A`);
+    text += `%0AИтого: ${total}`;
+    const url = `https://wa.me/${phone.replace(/\D/g,'')}?text=${text}`;
+    window.open(url, '_blank');
+  });
+
+  // Clear errors helper
+  function clearErrors(){
+    ['err-name','err-email','err-phone'].forEach(id=>{ const e=$(id); if(e){ e.style.display='none'; e.textContent=''; }});
+    ['clientName','clientEmail','clientPhone'].forEach(i=>{ const node=$(i); if(node) node.classList.remove('is-error'); });
+  }
+
+  // Submit button: simple notification
+  $('btnPay').addEventListener('click', ()=>{
+    const name = $('clientName').value.trim();
+    const email = $('clientEmail').value.trim();
+    const phone = $('clientPhone').value.trim();
+    const website = $('website').value.trim(); // honeypot
+
+    clearErrors();
+
+    if (website) { showToast('Ошибка: подозрение на спам', 3500); return; }
+    if (!name){ setError('err-name','Введите имя'); $('clientName').classList.add('is-error'); return; }
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)){ setError('err-email','Неверный e-mail'); $('clientEmail').classList.add('is-error'); return; }
+    if (!phone){ setError('err-phone','Введите телефон'); $('clientPhone').classList.add('is-error'); return; }
+    if (cart.length===0){ showToast('Корзина пуста',2500); return; }
+
+    showToast('Заказ принят, ожидайте ответа', 4000);
+
+    // Очистка формы и корзины
+    $('orderForm').reset();
+    localStorage.removeItem('timeless_cart');
+    cart = [];
+    renderSummary();
+  });
+
+  function setError(id,msg){ const el=$(id); el.style.display='block'; el.textContent=msg; }
+
+})();
+</script>
+
+</body>
+</html>

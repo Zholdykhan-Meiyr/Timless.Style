@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог — Timeless Style</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #f8f5f0;
+      color: #3a2c1e;
+      margin: 0;
+    }
+
+    header {
+      background-color: #3a2c1e;
+      color: white;
+      padding: 15px 40px;
+      text-align: center;
+      font-size: 22px;
+      letter-spacing: 1px;
+    }
+
+    .catalog {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      padding: 40px;
+    }
+
+    .card {
+      background-color: #fffaf3;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card img {
+      width: 100%;
+      height: 330px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .card h3 {
+      font-size: 20px;
+      margin: 10px 0;
+    }
+
+    .card p {
+      font-size: 15px;
+      color: #5c4a3d;
+      margin-bottom: 15px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .btn-try {
+      background-color: #d3b58f;
+      color: white;
+    }
+
+    .btn-buy {
+      background-color: #3a2c1e;
+      color: white;
+    }
+
+    .btn:hover {
+      opacity: 0.85;
+    }
+
+    /* Модальные окна */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+    }
+
+    .modal-content {
+      background-color: #fffaf3;
+      margin: 10% auto;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    input, select {
+      width: 90%;
+      padding: 8px;
+      margin: 8px 0;
+      border: 1px solid #c2a883;
+      border-radius: 6px;
+    }
+
+    .close {
+      color: #3a2c1e;
+      font-size: 22px;
+      float: right;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<header>Timeless Style — Каталог</header>
+
+<section class="catalog">
+  <!-- Карточки товаров -->
+  <div class="card">
+    <img src="https://budless.kz/wp-content/uploads/2023/10/img_8428-scaled.jpg" alt="Suit 1">
+    <div class="card-content">
+      <h3>Classic Beige Suit</h3>
+      <p>Классический костюм в бежевых тонах</p>
+      <div class="buttons">
+        <button class="btn btn-try" onclick="openModal('tryonModal')">Примерка</button>
+        <button class="btn btn-buy" onclick="openModal('buyModal')">Купить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="https://budless.kz/wp-content/uploads/2023/10/img_8377-scaled.jpg" alt="Suit 2">
+    <div class="card-content">
+      <h3>Brown Wool Suit</h3>
+      <p>Элегантный костюм из шерсти</p>
+      <div class="buttons">
+        <button class="btn btn-try" onclick="openModal('tryonModal')">Примерка</button>
+        <button class="btn btn-buy" onclick="openModal('buyModal')">Купить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="https://budless.kz/wp-content/uploads/2023/10/img_8840.png" alt="Suit 3">
+    <div class="card-content">
+      <h3>Modern Fit</h3>
+      <p>Современный силуэт и минимализм</p>
+      <div class="buttons">
+        <button class="btn btn-try" onclick="openModal('tryonModal')">Примерка</button>
+        <button class="btn btn-buy" onclick="openModal('buyModal')">Купить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="https://budless.kz/wp-content/uploads/2023/10/img_8838.png" alt=  "Suit 4">
+    <div class="card-content">
+      <h3>Ivory Premium</h3>
+      <p>Премиальный костюм в молочном цвете</p>
+      <div class="buttons">
+        <button class="btn btn-try" onclick="openModal('tryonModal')">Примерка</button>
+        <button class="btn btn-buy" onclick="openModal('buyModal')">Купить</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Модальное окно Примерки -->
+<div id="tryonModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('tryonModal')">&times;</span>
+    <h3>Записаться на примерку</h3>
+    <input type="text" placeholder="Ваше имя">
+    <input type="tel" placeholder="Телефон">
+    <input type="datetime-local">
+    <button class="btn btn-try">Отправить заявку</button>
+  </div>
+</div>
+
+<!-- Модальное окно Покупки -->
+<div id="buyModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('buyModal')">&times;</span>
+    <h3>Выберите параметры</h3>
+    <select>
+      <option>Размер: 46</option>
+      <option>Размер: 48</option>
+      <option>Размер: 50</option>
+      <option>Размер: 52</option>
+    </select>
+    <select>
+      <option>Материал: Шерсть</option>
+      <option>Материал: Хлопок</option>
+      <option>Материал: Лен</option>
+    </select>
+    <button class="btn btn-buy">Добавить в корзину</button>
+  </div>
+</div>
+
+<script>
+  function openModal(id) {
+    document.getElementById(id).style.display = 'block';
+  }
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+  window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(m => { if (event.target == m) m.style.display = 'none'; });
+  }
+</script>
+
+</body>
+</html>

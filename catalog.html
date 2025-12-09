@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Каталог — Timeless Style</title>
+  <style>
+    :root{
+      --bg:#f8f5f1;
+      --brown:#4a3b2b;
+      --beige:#fff6ee;
+      --accent:#d2b48c;
+      --container:1100px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--brown);-webkit-font-smoothing:antialiased}
+    .container{max-width:var(--container);margin:0 auto;padding:0 20px}
+
+    /* --- Навигация --- */
+    .site-header{
+      position:fixed;top:0;left:0;width:100%;z-index:100;
+      transition:background-color .4s ease, box-shadow .4s ease;
+      background:var(--brown);
+      box-shadow:0 2px 10px rgba(0,0,0,0.25);
+    }
+    .header-inner{
+      max-width:var(--container);
+      margin:0 auto;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:18px 20px;
+    }
+    .logo{color:var(--beige);font-weight:700;text-decoration:none;font-size:20px;letter-spacing:1px}
+    .nav{display:flex;align-items:center;gap:22px}
+    .nav a{color:var(--beige);text-decoration:none;font-size:13px;letter-spacing:1px;padding:6px 8px}
+    .nav a:hover{color:var(--accent)}
+    .cart-btn{
+      background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--beige);
+      padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;position:relative;
+    }
+    .cart-badge{
+      position:absolute;top:-8px;right:-8px;background:#ef4444;color:white;
+      border-radius:50%;width:20px;height:20px;font-size:11px;
+      display:flex;align-items:center;justify-content:center;font-weight:bold;
+    }
+
+    /* --- Hero Section --- */
+    .page-hero{
+      padding:120px 0 60px;
+      background:linear-gradient(135deg, rgba(74,59,43,0.03), rgba(210,180,140,0.08));
+      text-align:center;
+    }
+    .page-hero h1{font-size:42px;margin-bottom:12px;color:var(--brown)}
+    .page-hero p{font-size:17px;color:rgba(74,59,43,0.75)}
+
+    /* --- Products Section --- */
+    .section{padding:60px 0 80px}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+      gap:24px;
+      margin-top:30px;
+    }
+    .card{
+      background:var(--beige);
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 6px 25px rgba(74,59,43,0.08);
+      display:flex;flex-direction:column;
+      transition:transform .4s ease, box-shadow .4s ease;
+      cursor:pointer;
+    }
+    .card:hover{transform:translateY(-5px);box-shadow:0 10px 40px rgba(74,59,43,0.15)}
+    .card img{width:100%;height:340px;object-fit:cover}
+    .card-body{padding:16px;display:flex;flex-direction:column;gap:10px}
+    .card-body h4{margin:0;font-size:16px;line-height:1.3}
+    .price{color:var(--brown);font-weight:bold;font-size:18px}
+    .card-actions{display:flex;gap:8px}
+    .btn-add-cart{
+      flex:1;
+      background:var(--brown);color:var(--beige);
+      border:none;border-radius:6px;padding:9px 12px;
+      cursor:pointer;font-size:13px;transition:background .3s;
+      font-family:Georgia,serif;
+    }
+    .btn-add-cart:hover{background:#3a2f21}
+    .btn-fitting{
+      flex:1;
+      background:var(--accent);color:white;
+      border:none;border-radius:6px;padding:9px 12px;
+      cursor:pointer;font-size:13px;transition:background .3s;
+      font-family:Georgia,serif;
+    }
+    .btn-fitting:hover{background:#c2a47c}
+
+    /* --- Modal --- */
+    .modal{
+      display:none;
+      position:fixed;inset:0;background:rgba(0,0,0,0.6);
+      z-index:1000;align-items:center;justify-content:center;padding:20px;
+    }
+    .modal.active{display:flex}
+    .modal-content{
+      background:white;border-radius:16px;max-width:900px;width:100%;
+      max-height:90vh;overflow-y:auto;position:relative;
+    }
+    .modal-close{
+      position:absolute;top:16px;right:16px;
+      background:white;border:none;border-radius:50%;
+      width:40px;height:40px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      font-size:24px;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+    .modal-close:hover{background:#f3f4f6}
+    .modal-body{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:24px}
+    .modal-image{border-radius:12px;overflow:hidden}
+    .modal-image img{width:100%;height:100%;object-fit:cover}
+    .modal-info{display:flex;flex-direction:column;justify-content:space-between}
+    .modal-category{
+      display:inline-block;background:#fef3c7;color:#92400e;
+      padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600;margin-bottom:12px;
+    }
+    .modal-title{font-size:32px;font-weight:bold;margin-bottom:16px;color:var(--brown)}
+    .modal-description{color:#6b7280;line-height:1.7;margin-bottom:24px}
+    .modal-price{font-size:36px;font-weight:bold;color:#92400e;margin-bottom:24px}
+    .modal-actions{display:flex;gap:12px}
+    .modal-actions button{
+      flex:1;padding:12px 24px;border-radius:8px;font-size:15px;
+      font-weight:500;cursor:pointer;transition:all .3s;border:none;
+      font-family:Georgia,serif;
+    }
+    .btn-add{background:var(--brown);color:white}
+    .btn-add:hover{background:#3a2f21}
+    .btn-cancel{background:#e5e7eb;color:var(--brown)}
+    .btn-cancel:hover{background:#d1d5db}
+
+    /* --- Fitting Modal --- */
+    .fitting-modal .modal-content{max-width:500px}
+    .fitting-form{padding:30px}
+    .fitting-form h2{font-size:28px;margin-bottom:20px;color:var(--brown)}
+    .form-group{margin-bottom:20px}
+    .form-group label{display:block;margin-bottom:8px;color:var(--brown);font-weight:500;font-size:14px}
+    .form-group input{
+      width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:8px;
+      font-size:15px;font-family:Georgia,serif;transition:border .3s;
+    }
+    .form-group input:focus{outline:none;border-color:var(--accent)}
+    .fitting-info{
+      background:#fef3c7;padding:16px;border-radius:8px;margin-bottom:20px;
+      border-left:4px solid #92400e;
+    }
+    .fitting-info h3{font-size:16px;margin-bottom:8px;color:#92400e}
+    .fitting-info p{font-size:14px;line-height:1.6;color:#78350f}
+    .btn-submit{
+      width:100%;background:var(--brown);color:white;border:none;
+      padding:14px;border-radius:8px;font-size:16px;font-weight:500;
+      cursor:pointer;transition:background .3s;font-family:Georgia,serif;
+    }
+    .btn-submit:hover{background:#3a2f21}
+
+    /* --- Cart Sidebar --- */
+    .cart-sidebar{
+      position:fixed;right:0;top:0;height:100%;width:100%;max-width:450px;
+      background:white;box-shadow:-4px 0 20px rgba(0,0,0,0.15);
+      transform:translateX(100%);transition:transform .3s ease;z-index:1001;
+      display:flex;flex-direction:column;
+    }
+    .cart-sidebar.active{transform:translateX(0)}
+    .cart-overlay{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;
+    }
+    .cart-overlay.active{display:block}
+    .cart-header{
+      background:linear-gradient(135deg, var(--brown), #5c4a3a);
+      color:white;padding:24px;
+    }
+    .cart-header h2{font-size:24px;margin-bottom:4px}
+    .cart-header p{font-size:14px;opacity:0.9}
+    .cart-close{
+      position:absolute;top:24px;right:24px;
+      background:rgba(255,255,255,0.2);border:none;border-radius:8px;
+      padding:8px;cursor:pointer;color:white;
+    }
+    .cart-items{flex:1;overflow-y:auto;padding:24px}
+    .cart-item{
+      background:#f9fafb;border-radius:12px;padding:16px;margin-bottom:16px;
+      display:flex;gap:16px;
+    }
+    .cart-item-img{width:80px;height:80px;border-radius:8px;object-fit:cover}
+    .cart-item-info{flex:1}
+    .cart-item-name{font-weight:600;color:var(--brown);margin-bottom:4px}
+    .cart-item-price{color:#92400e;font-weight:bold;margin-bottom:8px}
+    .cart-item-controls{display:flex;align-items:center;gap:12px}
+    .qty-control{
+      display:flex;align-items:center;gap:8px;background:white;
+      border-radius:8px;padding:4px;box-shadow:0 1px 3px rgba(0,0,0,0.1);
+    }
+    .qty-btn{
+      background:transparent;border:none;width:28px;height:28px;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+      border-radius:6px;transition:background .2s;
+    }
+    .qty-btn:hover{background:#f3f4f6}
+    .qty-value{width:32px;text-align:center;font-weight:600}
+    .remove-btn{
+      background:transparent;border:none;color:#dc2626;
+      cursor:pointer;padding:6px;border-radius:6px;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .remove-btn:hover{background:#fee2e2}
+    .cart-empty{
+      text-align:center;padding:60px 20px;color:#9ca3af;
+    }
+    .cart-empty svg{margin:0 auto 16px;opacity:0.3}
+    .cart-footer{
+      border-top:1px solid #e5e7eb;padding:24px;background:white;
+    }
+    .cart-total{
+      display:flex;justify-content:space-between;font-size:18px;margin-bottom:20px;
+    }
+    .cart-total span:last-child{font-weight:bold;color:var(--brown)}
+    .checkout-btn{
+      width:100%;background:var(--brown);color:white;border:none;
+      padding:14px;border-radius:8px;font-size:16px;font-weight:500;
+      cursor:pointer;margin-bottom:12px;transition:background .3s;
+    }
+    .checkout-btn:hover{background:#3a2f21}
+    .clear-btn{
+      width:100%;background:#e5e7eb;color:var(--brown);border:none;
+      padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;
+    }
+    .clear-btn:hover{background:#d1d5db}
+
+    /* --- Footer --- */
+    .site-footer{
+      background:var(--brown);
+      color:var(--beige);
+      padding:40px 0;
+      text-align:center;
+    }
+    .site-footer a{color:var(--beige);text-decoration:none}
+
+    @media(max-width:768px){
+      .page-hero h1{font-size:32px}
+      .modal-body{grid-template-columns:1fr}
+      .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+      .card img{height:240px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header" id="header">
+    <div class="header-inner">
+      <a class="logo" href="index.html">Timeless Style</a>
+      <nav class="nav">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="contact.html">Контакты</a>
+        <a href="Autor.html">Автор</a>
+        <button class="cart-btn" id="cartToggle">
+          Корзина (<span id="cartCount">0</span>)
+          <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="container">
+      <h1>Каталог</h1>
+      <p>Изысканная коллекция мужских костюмов и аксессуаров</p>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="section">
+    <div class="container">
+      <div class="grid" id="productsGrid"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <strong>Timeless Style</strong><br>
+      © <span id="year"></span> · Almaty, Kazakhstan
+    </div>
+  </footer>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">×</button>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- FITTING MODAL -->
+  <div class="modal fitting-modal" id="fittingModal">
+    <div class="modal-content">
+      <button class="modal-close" id="fittingClose">×</button>
+      <div class="fitting-form">
+        <h2>Записаться на примерку</h2>
+        <div class="fitting-info">
+          <h3>Для чего нужна примерка</h3>
+          <p>Примерка позволяет убедиться в посадке и комфорте костюма перед покупкой. Наш мастер поможет подобрать идеальный размер и при необходимости внесет коррективы для безупречной посадки.</p>
+        </div>
+        <form id="fittingForm">
+          <div class="form-group">
+            <label for="fittingName">Ваше имя</label>
+            <input type="text" id="fittingName" name="name" required placeholder="Иван Иванов">
+          </div>
+          <div class="form-group">
+            <label for="fittingPhone">Телефон</label>
+            <input type="tel" id="fittingPhone" name="phone" required placeholder="+7 (___) ___-__-__">
+          </div>
+          <div class="form-group">
+            <label for="fittingDate">Дата и время</label>
+            <input type="datetime-local" id="fittingDate" name="datetime" required>
+          </div>
+          <input type="hidden" id="fittingProductId" name="productId">
+          <button type="submit" class="btn-submit">Отправить заявку</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART SIDEBAR -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <button class="cart-close" id="cartClose">✕</button>
+      <h2>Корзина</h2>
+      <p id="cartItemCount">0 товаров</p>
+    </div>
+    <div class="cart-items" id="cartItemsList"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Итого:</span>
+        <span id="cartTotal">0 ₸</span>
+      </div>
+      <button class="checkout-btn" id="checkoutBtn">Оформить заказ</button>
+      <button class="clear-btn" id="clearBtn">Очистить корзину</button>
+    </div>
+  </div>
+
+  <script>
+    // Данные товаров (из второго каталога)
+    const products = [
+      // ПАЛЬТО
+      {
+        id: 1,
+        name: "Классическое пальто Camel",
+        price: 89000,
+        category: "outerwear",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_8427-scaled.jpg",
+        description: "Элегантное пальто в классическом бежевом оттенке. Изготовлено из премиальной шерсти с добавлением кашемира. Идеально подходит для межсезонья и прохладной погоды."
+      },
+      {
+        id: 2,
+        name: "Минималистичное пальто Sand",
+        price: 95000,
+        category: "outerwear",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_8427-scaled.jpg",
+        description: "Современное пальто в стиле минимализм. Чистые линии, лаконичный крой и песочный оттенок создают образ уверенного городского жителя."
+      },
+      {
+        id: 3,
+        name: "Тренч Light Beige",
+        price: 102000,
+        category: "outerwear",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_8427-scaled.jpg",
+        description: "Классический тренч в светло-бежевом цвете. Двубортная застежка, пояс и лацканы создают узнаваемый силуэт. Водоотталкивающая пропитка защищает от дождя."
+      },
+      {
+        id: 4,
+        name: "Кашемировое пальто Brown",
+        price: 115000,
+        category: "outerwear",
+        image: "https://budless.kz/wp-content/uploads/2023/10/img_8839.png",
+        description: "Роскошное пальто из 100% кашемира премиум класса. Благородный коричневый оттенок и мягкая текстура создают ощущение комфорта и статуса."
+      },
+      
+      // КОСТЮМЫ
+      {
+        id: 5,
+        name: "Элегантный костюм Graphite",
+        price: 120000,
+        category: "suits",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_4217.jpg",
+        description: "Стильный костюм в графитовом оттенке. Приталенный крой подчеркивает фигуру, а качественная шерстяная ткань с легким блеском создает элегантный вид."
+      },
+      {
+        id: 6,
+        name: "Классический костюм Navy",
+        price: 125000,
+        category: "suits",
+        image: "https://www.budless.kz/wp-content/uploads/2024/03/img_3201.jpg",
+        description: "Темно-синий костюм классического кроя. Универсальное решение для офиса и официальных событий. Качественная шерсть Super 120's обеспечивает комфорт."
+      },
+      {
+        id: 7,
+        name: "Серый костюм Modern",
+        price: 118000,
+        category: "suits",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_4038.jpeg",
+        description: "Современный серый костюм с облегченной конструкцией. Slim fit силуэт создает актуальный образ. Итальянская ткань с эффектом меланжа добавляет глубину цвету."
+      },
+      {
+        id: 8,
+        name: "Черный костюм Classic",
+        price: 130000,
+        category: "suits",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_4477.jpeg",
+        description: "Безупречный черный костюм для особых случаев. Классический крой, идеальная посадка и премиальная шерсть создают образ успешного делового человека."
+      },
+      
+      // ОБУВЬ
+      {
+        id: 9,
+        name: "Классические туфли Black",
+        price: 45000,
+        category: "shoes",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/c1ec5102-ef7f-46ef-8b68-0d43972ec170-scaled.jpg",
+        description: "Классические черные туфли из натуральной кожи. Технология Goodyear welted обеспечивает долговечность. Идеально сочетаются с деловыми костюмами."
+      },
+      {
+        id: 10,
+        name: "Кеды Casual White",
+        price: 28000,
+        category: "shoes",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/5cef25e7-d4a1-4753-b670-5b4ebd9ca74f-scaled.jpg",
+        description: "Минималистичные белые кеды из премиальной кожи. Универсальная повседневная обувь, которая сочетается с джинсами, чиносами и даже неформальными костюмами."
+      },
+      {
+        id: 11,
+        name: "Ботинки Brown Leather",
+        price: 60000,
+        category: "shoes",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_2152-scaled.jpg",
+        description: "Классические коричневые ботинки из натуральной кожи. Броги стиль с перфорацией добавляет элегантности. Утепленная подкладка делает их идеальными для холодного сезона."
+      },
+      {
+        id: 12,
+        name: "Слипоны Grey",
+        price: 35000,
+        category: "shoes",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/176327eb-a37d-4faa-a57f-cdc53cacf130-821x1024.jpg",
+        description: "Удобные серые слипоны из замши. Идеальны для casual образов и путешествий. Эластичные вставки обеспечивают легкость надевания."
+      },
+      
+      // АКСЕССУАРЫ
+      {
+        id: 13,
+        name: "Кожаный ремень Brown",
+        price: 15000,
+        category: "accessories",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_8926-821x1024.jpg",
+        description: "Классический кожаный ремень из итальянской кожи. Реверсивная конструкция (коричневый/черный) делает его универсальным. Ширина 3.5 см."
+      },
+      {
+        id: 14,
+        name: "Часы Tissot",
+        price: 120000,
+        category: "accessories",
+        image: "https://chronos.kz/wp-content/uploads/2025/09/t156.410.11.091.00-1.jpg",
+        description: "Швейцарские часы Tissot с автоматическим механизмом. Сапфировое стекло защищает циферблат. Корпус из нержавеющей стали и кожаный ремешок."
+      },
+      {
+        id: 15,
+        name: "Шарф кашемировый Grey",
+        price: 25000,
+        category: "accessories",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_8926-821x1024.jpg",
+        description: "Роскошный кашемировый шарф серого цвета. Мягкая текстура и элегантный дизайн. Идеальное дополнение к любому пальто или костюму."
+      },
+      {
+        id: 16,
+        name: "Портфель кожаный Black",
+        price: 85000,
+        category: "accessories",
+        image: "https://www.budless.kz/wp-content/uploads/2023/10/img_8926-821x1024.jpg",
+        description: "Элегантный кожаный портфель из натуральной кожи. Вместительные отделения для документов и ноутбука. Классический черный цвет для делового стиля."
+      }
+    ];
+
+    // Состояние
+    let cart = [];
+    let selectedProductForFitting = null;
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCart();
+      renderProducts();
+      updateCartUI();
+      setupEventListeners();
+      
+      document.getElementById("year").textContent = new Date().getFullYear();
+    });
+
+    // Загрузка корзины из localStorage
+    function loadCart() {
+      const saved = localStorage.getItem('timeless_cart');
+      if (saved) {
+        try {
+          cart = JSON.parse(saved);
+        } catch(e) {
+          cart = [];
+        }
+      }
+    }
+
+    // Сохранение корзины
+    function saveCart() {
+      localStorage.setItem('timeless_cart', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    // Форматирование цены
+    function formatPrice(price) {
+      return new Intl.NumberFormat('ru-RU').format(price) + ' ₸';
+    }
+
+    // Отрисовка товаров
+    function renderProducts() {
+      const grid = document.getElementById('productsGrid');
+      grid.innerHTML = products.map(p => `
+        <div class="card" data-id="${p.id}">
+          <img src="${p.image}" alt="${p.name}">
+          <div class="card-body">
+            <h4>${p.name}</h4>
+            <div class="price">${formatPrice(p.price)}</div>
+            <div class="card-actions">
+              <button class="btn-add-cart" onclick="addToCart(${p.id}, event)">В корзину</button>
+              <button class="btn-fitting" onclick="openFittingModal(${p.id}, event)">Примерка</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Клик по карточке открывает модалку товара
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (!e.target.closest('.card-actions')) {
+            const id = parseInt(card.dataset.id);
+            openProductModal(id);
+          }
+        });
+      });
+    }
+
+    // Открытие модального окна товара
+    function openProductModal(id) {
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+
+      const modal = document.getElementById('productModal');
+      const body = document.getElementById('modalBody');
+      
+      body.innerHTML = `
+        <div class="modal-image">
+          <img src="${product.image}" alt="${product.name}">
+        </div>
+        <div class="modal-info">
+          <div>
+            <span class="modal-category">${product.category}</span>
+            <h2 class="modal-title">${product.name}</h2>
+            <p class="modal-description">${product.description}</p>
+            <div class="modal-price">${formatPrice(product.price)}</div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn-add" onclick="addToCart(${product.id}); closeProductModal()">
+              Добавить в корзину
+            </button>
+            <button class="btn-cancel" onclick="closeProductModal()">Закрыть</button>
+          </div>
+        </div>
+      `;
+      
+      modal.classList.add('active');
+    }
+
+    // Закрытие модального окна товара
+    function closeProductModal() {
+      document.getElementById('productModal').classList.remove('active');
+    }
+
+    // Открытие модального окна примерки
+    function openFittingModal(id, event) {
+      if (event) event.stopPropagation();
+      
+      selectedProductForFitting = id;
+      document.getElementById('fittingProductId').value = id;
+      document.getElementById('fittingModal').classList.add('active');
+      
+      // Сброс формы
+      document.getElementById('fittingForm').reset();
+    }
+
+    // Закрытие модального окна примерки
+    function closeFittingModal() {
+      document.getElementById('fittingModal').classList.remove('active');
+      selectedProductForFitting = null;
+    }
+
+    // Добавление в корзину
+    function addToCart(id, event) {
+      if (event) event.stopPropagation();
+      
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        cart.push({...product, quantity: 1});
+      }
+      
+      saveCart();
+    }
+
+    // Увеличение количества
+    function increaseQty(id) {
+      const item = cart.find(i => i.id === id);
+      if (item) {
+        item.quantity++;
+        saveCart();
+      }
+    }
+
+    // Уменьшение количества
+    function decreaseQty(id) {
+      const item = cart.find(i => i.id === id);
+      if (item && item.quantity > 1) {
+        item.quantity--;
+        saveCart();
+      }
+    }
+
+    // Удаление из корзины
+    function removeFromCart(id) {
+      cart = cart.filter(i => i.id !== id);
+      saveCart();
+    }
+
+    // Очистка корзины
+    function clearCart() {
+      if (confirm('Очистить корзину?')) {
+        cart = [];
+        saveCart();
+      }
+    }
+
+    // Обновление UI корзины
+    function updateCartUI() {
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+      // Счетчик в header
+      document.getElementById('cartCount').textContent = totalItems;
+      const badge = document.getElementById('cartBadge');
+      if (totalItems > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = totalItems;
+      } else {
+        badge.style.display = 'none';
+      }
+
+      // Список товаров
+      const list = document.getElementById('cartItemsList');
+      document.getElementById('cartItemCount').textContent = 
+        `${totalItems} ${totalItems === 1 ? 'товар' : 'товаров'}`;
+      
+      if (cart.length === 0) {
+        list.innerHTML = `
+          <div class="cart-empty">
+            <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.6-1.4 2.5c-.2.3-.2.6-.2.9 0 1.1.9 2 2 2h12v-2H7.4c-.1 0-.2-.1-.2-.2l.03-.12L8.1 13h7.5c.8 0 1.5-.4 1.9-1l3.6-6.5c.1-.2.2-.4.2-.5 0-.6-.4-1-1-1H5.2l-.9-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+            <p>Ваша корзина пуста</p>
+          </div>
+        `;
+      } else {
+        list.innerHTML = cart.map(item => `
+          <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-price">${formatPrice(item.price)}</div>
+              <div class="cart-item-controls">
+                <div class="qty-control">
+                  <button class="qty-btn" onclick="decreaseQty(${item.id})">−</button>
+                  <span class="qty-value">${item.quantity}</span>
+                  <button class="qty-btn" onclick="increaseQty(${item.id})">+</button>
+                </div>
+                <button class="remove-btn" onclick="removeFromCart(${item.id})">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Итого
+      document.getElementById('cartTotal').textContent = formatPrice(totalPrice);
+    }
+
+    // События
+    function setupEventListeners() {
+      // Корзина
+      document.getElementById('cartToggle').addEventListener('click', () => {
+        document.getElementById('cartSidebar').classList.add('active');
+        document.getElementById('cartOverlay').classList.add('active');
+      });
+
+      document.getElementById('cartClose').addEventListener('click', () => {
+        document.getElementById('cartSidebar').classList.remove('active');
+        document.getElementById('cartOverlay').classList.remove('active');
+      });
+
+      document.getElementById('cartOverlay').addEventListener('click', () => {
+        document.getElementById('cartSidebar').classList.remove('active');
+        document.getElementById('cartOverlay').classList.remove('active');
+      });
+
+      // Модалка товара
+      document.getElementById('modalClose').addEventListener('click', closeProductModal);
+      
+      document.getElementById('productModal').addEventListener('click', (e) => {
+        if (e.target.id === 'productModal') closeProductModal();
+      });
+
+      // Модалка примерки
+      document.getElementById('fittingClose').addEventListener('click', closeFittingModal);
+      
+      document.getElementById('fittingModal').addEventListener('click', (e) => {
+        if (e.target.id === 'fittingModal') closeFittingModal();
+      });
+
+      // Форма примерки
+      document.getElementById('fittingForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const formData = {
+          name: document.getElementById('fittingName').value,
+          phone: document.getElementById('fittingPhone').value,
+          datetime: document.getElementById('fittingDate').value,
+          productId: selectedProductForFitting,
+          productName: products.find(p => p.id === selectedProductForFitting)?.name
+        };
+        
+        console.log('Заявка на примерку:', formData);
+        alert(`Спасибо, ${formData.name}! Ваша заявка на примерку принята. Мы свяжемся с вами по телефону ${formData.phone}.`);
+        
+        closeFittingModal();
+      });
+
+      // Корзина действия
+      document.getElementById('clearBtn').addEventListener('click', clearCart);
+      document.getElementById('checkoutBtn').addEventListener('click', () => {
+  if (cart.length === 0) {
+    alert('Корзина пуста!');
+  } else {
+    document.getElementById('cartSidebar').classList.remove('active');
+    document.getElementById('cartOverlay').classList.remove('active');
+    window.location.href = 'checkout.html';
+  }
+});
+    }
+  </script>
+</body>
+</html>
